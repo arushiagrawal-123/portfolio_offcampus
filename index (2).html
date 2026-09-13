@@ -1,0 +1,1297 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Harsh Choudhary — SDE · AI Systems</title>
+<meta name="description" content="Harsh Choudhary — Electronics & Communication Engineering at MNNIT Allahabad. Building AI systems, RAG pipelines, and multi-agent workflows. Available for SDE roles." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#0a0a0b;
+    --bg-2:#111114;
+    --line:#1c1c22;
+    --line-2:#2a2a33;
+    --fg:#eef0f2;
+    --fg-dim:#8a8f99;
+    --fg-dimmer:#575c66;
+    --accent:#c6ff3d;
+    --accent-2:#ff5a3d;
+    --blue:#6ea8ff;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--fg);
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    font-weight:400;
+    line-height:1.6;
+    overflow-x:hidden;
+    cursor:none;
+  }
+  @media (max-width:768px){ body{cursor:auto} }
+
+  body::before{
+    content:'';
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:1;
+    opacity:.04;
+    background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' /%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' /%3E%3C/svg%3E");
+  }
+
+  /* BOOT SEQUENCE */
+  #boot{
+    position:fixed;
+    inset:0;
+    z-index:10000;
+    background:var(--bg);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.85rem;
+    color:var(--accent);
+    transition:opacity .5s .2s, visibility .5s .2s;
+  }
+  #boot.done{opacity:0;visibility:hidden}
+  #boot-inner{max-width:400px;padding:2rem}
+  #boot-inner div{margin:.2rem 0;opacity:0;animation:typein .1s forwards}
+  @keyframes typein{to{opacity:1}}
+  #boot .prompt{color:var(--fg-dim)}
+  #boot .ok{color:var(--accent)}
+
+  /* Cursor */
+  .cursor{
+    position:fixed;
+    width:8px;height:8px;
+    background:var(--accent);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:9999;
+    transition:transform .15s ease-out, width .2s, height .2s, background .2s;
+    mix-blend-mode:difference;
+  }
+  .cursor-ring{
+    position:fixed;
+    width:36px;height:36px;
+    border:1px solid var(--fg-dim);
+    border-radius:50%;
+    pointer-events:none;
+    z-index:9998;
+    transition:transform .25s cubic-bezier(.2,.8,.2,1), width .25s, height .25s, border-color .25s;
+  }
+  .cursor.hover{transform:scale(2);background:var(--accent)}
+  .cursor-ring.hover{width:60px;height:60px;border-color:var(--accent)}
+
+  /* Nav */
+  nav{
+    position:fixed;
+    top:0;left:0;right:0;
+    z-index:100;
+    padding:1.5rem 2.5rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    backdrop-filter:blur(12px);
+    background:rgba(10,10,11,.5);
+    border-bottom:1px solid transparent;
+    transition:border-color .3s;
+  }
+  nav.scrolled{border-bottom-color:var(--line)}
+  .logo{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.75rem;
+    letter-spacing:.2em;
+    color:var(--fg);
+    text-decoration:none;
+    display:flex;
+    align-items:center;
+    gap:.6rem;
+    text-transform:uppercase;
+  }
+  .logo-dot{
+    width:8px;height:8px;
+    background:var(--accent);
+    border-radius:50%;
+    animation:pulse 2s infinite;
+    box-shadow:0 0 12px var(--accent);
+  }
+  @keyframes pulse{
+    0%,100%{opacity:1;transform:scale(1)}
+    50%{opacity:.5;transform:scale(1.2)}
+  }
+  .nav-links{
+    display:flex;
+    gap:2.5rem;
+    list-style:none;
+  }
+  .nav-links a{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.15em;
+    color:var(--fg-dim);
+    text-decoration:none;
+    text-transform:uppercase;
+    transition:color .2s;
+  }
+  .nav-links a:hover{color:var(--fg)}
+  .nav-links a::before{
+    content:attr(data-num);
+    color:var(--accent);
+    margin-right:.4rem;
+    opacity:.6;
+  }
+  @media (max-width:768px){
+    nav{padding:1rem 1.25rem}
+    .nav-links{gap:1.2rem}
+    .nav-links a{font-size:.62rem}
+    .nav-links a::before{display:none}
+  }
+
+  /* Interactive canvas */
+  #network{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    pointer-events:none;
+  }
+  .grid-bg{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    background-image:
+      linear-gradient(var(--line) 1px,transparent 1px),
+      linear-gradient(90deg,var(--line) 1px,transparent 1px);
+    background-size:80px 80px;
+    opacity:.25;
+    mask-image:radial-gradient(ellipse at center,black 20%,transparent 75%);
+  }
+
+  main{position:relative;z-index:2}
+
+  /* HERO */
+  .hero{
+    min-height:100vh;
+    padding:8rem 2.5rem 4rem;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    max-width:1400px;
+    margin:0 auto;
+  }
+  .hero-meta{
+    display:flex;
+    gap:2rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--fg-dim);
+    margin-bottom:2.5rem;
+    flex-wrap:wrap;
+  }
+  .hero-meta span{display:flex;align-items:center;gap:.5rem}
+  .hero-meta .bullet{width:6px;height:6px;background:var(--accent);border-radius:50%}
+  .hero-meta .bullet.amber{background:var(--accent-2)}
+  .hero-meta .bullet.blue{background:var(--blue)}
+
+  .hero h1{
+    font-family:'Instrument Serif',serif;
+    font-size:clamp(3.5rem,10vw,9rem);
+    font-weight:400;
+    line-height:.95;
+    letter-spacing:-.03em;
+    margin-bottom:1.5rem;
+  }
+  .hero h1 .accent{
+    font-style:italic;
+    color:var(--accent);
+    position:relative;
+  }
+  .hero h1 .accent::after{
+    content:'';
+    position:absolute;
+    left:0;bottom:-8px;
+    width:100%;
+    height:1px;
+    background:var(--accent);
+    transform:scaleX(0);
+    transform-origin:left;
+    animation:underline 1.2s 1.5s forwards cubic-bezier(.7,0,.3,1);
+  }
+  @keyframes underline{to{transform:scaleX(1)}}
+
+  .hero-sub{
+    display:grid;
+    grid-template-columns:1fr auto;
+    gap:2rem;
+    align-items:end;
+    margin-top:3rem;
+    padding-top:2rem;
+    border-top:1px solid var(--line);
+  }
+  @media (max-width:768px){
+    .hero{padding:6rem 1.25rem 3rem}
+    .hero-sub{grid-template-columns:1fr;gap:1.5rem}
+  }
+  .hero-desc{
+    max-width:520px;
+    color:var(--fg-dim);
+    font-size:1.05rem;
+    line-height:1.7;
+  }
+  .hero-desc strong{color:var(--fg);font-weight:500}
+
+  /* Terminal panel */
+  .term{
+    width:320px;
+    background:var(--bg-2);
+    border:1px solid var(--line-2);
+    font-family:'JetBrains Mono',monospace;
+    font-size:.72rem;
+  }
+  .term-head{
+    padding:.5rem .8rem;
+    border-bottom:1px solid var(--line);
+    display:flex;
+    align-items:center;
+    gap:.4rem;
+    color:var(--fg-dimmer);
+    font-size:.65rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  .term-head .dot{width:8px;height:8px;border-radius:50%;background:var(--line-2)}
+  .term-head .dot.g{background:var(--accent)}
+  .term-body{padding:.8rem;color:var(--fg-dim);line-height:1.6}
+  .term-body div{margin:.15rem 0}
+  .term-body .k{color:var(--accent)}
+  .term-body .v{color:var(--fg)}
+  .term-body .c{color:var(--fg-dimmer)}
+  @media (max-width:768px){.term{width:100%;max-width:320px}}
+
+  .scroll-cue{
+    position:absolute;
+    bottom:2rem;
+    left:2.5rem;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.68rem;
+    letter-spacing:.25em;
+    color:var(--fg-dimmer);
+    text-transform:uppercase;
+    display:flex;
+    align-items:center;
+    gap:.75rem;
+  }
+  .scroll-cue::after{
+    content:'';
+    width:1px;
+    height:30px;
+    background:linear-gradient(180deg,var(--accent),transparent);
+    animation:scroll-drop 2s infinite;
+  }
+  @keyframes scroll-drop{
+    0%{transform:translateY(-10px);opacity:0}
+    50%{opacity:1}
+    100%{transform:translateY(10px);opacity:0}
+  }
+  @media (max-width:768px){.scroll-cue{display:none}}
+
+  /* MARQUEE */
+  .marquee{
+    background:var(--bg);
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+    padding:1.2rem 0;
+    position:relative;
+    z-index:3;
+  }
+  .marquee-track{
+    display:flex;
+    gap:3rem;
+    white-space:nowrap;
+    animation:scroll-x 40s linear infinite;
+    font-family:'Instrument Serif',serif;
+    font-size:1.8rem;
+    font-style:italic;
+    color:var(--fg-dim);
+  }
+  .marquee-track span{display:flex;align-items:center;gap:3rem}
+  .marquee-track span::after{
+    content:'✦';
+    color:var(--accent);
+    font-style:normal;
+    font-size:1.2rem;
+  }
+  @keyframes scroll-x{
+    from{transform:translateX(0)}
+    to{transform:translateX(-50%)}
+  }
+
+  /* SECTIONS */
+  section{
+    padding:8rem 2.5rem;
+    max-width:1400px;
+    margin:0 auto;
+    position:relative;
+  }
+  @media (max-width:768px){section{padding:5rem 1.25rem}}
+
+  .section-header{
+    display:grid;
+    grid-template-columns:auto 1fr;
+    gap:3rem;
+    align-items:baseline;
+    margin-bottom:4rem;
+    padding-bottom:2rem;
+    border-bottom:1px solid var(--line);
+  }
+  .section-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.75rem;
+    color:var(--accent);
+    letter-spacing:.2em;
+  }
+  .section-title{
+    font-family:'Instrument Serif',serif;
+    font-size:clamp(2rem,5vw,3.5rem);
+    font-weight:400;
+    letter-spacing:-.02em;
+    line-height:1;
+  }
+  .section-title em{color:var(--fg-dim);font-style:italic}
+  @media (max-width:768px){
+    .section-header{grid-template-columns:1fr;gap:.75rem;margin-bottom:2.5rem}
+  }
+
+  /* ABOUT */
+  .about{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:5rem;
+  }
+  @media (max-width:900px){.about{grid-template-columns:1fr;gap:2.5rem}}
+
+  .about-text p{
+    font-size:1.1rem;
+    line-height:1.75;
+    color:var(--fg-dim);
+    margin-bottom:1.5rem;
+  }
+  .about-text p strong{color:var(--fg);font-weight:500}
+  .about-text .pull{
+    font-family:'Instrument Serif',serif;
+    font-style:italic;
+    font-size:1.5rem;
+    color:var(--fg);
+    line-height:1.4;
+    padding-left:1.5rem;
+    border-left:2px solid var(--accent);
+    margin:2rem 0;
+  }
+
+  .stats{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .stat{
+    padding:2rem 1.5rem;
+    background:var(--bg);
+    transition:background .3s;
+  }
+  .stat:hover{background:var(--bg-2)}
+  .stat-value{
+    font-family:'Instrument Serif',serif;
+    font-size:3rem;
+    line-height:1;
+    color:var(--fg);
+    margin-bottom:.5rem;
+  }
+  .stat-value .unit{
+    font-size:1.2rem;
+    color:var(--fg-dim);
+    margin-left:.2rem;
+  }
+  .stat-label{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--fg-dim);
+  }
+
+  /* SKILLS */
+  .skills-grid{
+    display:grid;
+    gap:1px;
+    background:var(--line);
+    border:1px solid var(--line);
+  }
+  .skill-row{
+    display:grid;
+    grid-template-columns:220px 1fr;
+    gap:2rem;
+    padding:2rem;
+    background:var(--bg);
+    align-items:center;
+    transition:background .3s;
+  }
+  .skill-row:hover{background:var(--bg-2)}
+  .skill-cat{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--fg-dim);
+  }
+  .skill-cat::before{
+    content:'▸ ';
+    color:var(--accent);
+  }
+  .skill-list{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.5rem;
+  }
+  .skill-tag{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.78rem;
+    padding:.4rem .8rem;
+    border:1px solid var(--line-2);
+    color:var(--fg);
+    border-radius:2px;
+    transition:all .2s;
+  }
+  .skill-tag:hover{
+    border-color:var(--accent);
+    color:var(--accent);
+    transform:translateY(-2px);
+  }
+  @media (max-width:768px){
+    .skill-row{grid-template-columns:1fr;gap:1rem;padding:1.5rem}
+  }
+
+  /* PROJECTS */
+  .projects{display:flex;flex-direction:column;gap:0}
+  .project{
+    display:grid;
+    grid-template-columns:80px 1fr auto;
+    gap:3rem;
+    padding:3rem 0;
+    border-top:1px solid var(--line);
+    position:relative;
+    cursor:none;
+    transition:padding .4s;
+    text-decoration:none;
+    color:inherit;
+  }
+  .project:last-child{border-bottom:1px solid var(--line)}
+  .project:hover{padding:3rem 1rem}
+  .project::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:linear-gradient(90deg,transparent, rgba(198,255,61,.03), transparent);
+    opacity:0;
+    transition:opacity .4s;
+    pointer-events:none;
+  }
+  .project:hover::before{opacity:1}
+
+  /* Giant number reveal on hover */
+  .project::after{
+    content:attr(data-big);
+    position:absolute;
+    right:2rem;
+    top:50%;
+    transform:translateY(-50%) translateX(20px);
+    font-family:'Instrument Serif',serif;
+    font-size:12rem;
+    color:var(--accent);
+    opacity:0;
+    pointer-events:none;
+    line-height:1;
+    transition:opacity .4s, transform .4s;
+    z-index:0;
+  }
+  .project:hover::after{opacity:.06;transform:translateY(-50%) translateX(0)}
+  @media (max-width:900px){.project::after{display:none}}
+
+  .project-num{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.8rem;
+    color:var(--fg-dimmer);
+    letter-spacing:.15em;
+    padding-top:.8rem;
+    position:relative;
+    z-index:2;
+  }
+  .project-body{min-width:0;position:relative;z-index:2}
+  .project-title{
+    font-family:'Instrument Serif',serif;
+    font-size:clamp(2rem,4.5vw,3rem);
+    font-weight:400;
+    line-height:1.05;
+    margin-bottom:.75rem;
+    display:flex;
+    align-items:baseline;
+    gap:1rem;
+    flex-wrap:wrap;
+  }
+  .project-title .arrow{
+    font-size:1.5rem;
+    color:var(--accent);
+    transition:transform .3s;
+    display:inline-block;
+  }
+  .project:hover .project-title .arrow{transform:translateX(8px) rotate(-45deg)}
+  .badge{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.65rem;
+    padding:.3rem .6rem;
+    background:rgba(198,255,61,.1);
+    color:var(--accent);
+    border:1px solid rgba(198,255,61,.3);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    border-radius:2px;
+  }
+  .badge.amber{
+    background:rgba(255,90,61,.1);
+    color:var(--accent-2);
+    border-color:rgba(255,90,61,.3);
+  }
+
+  .project-desc{
+    color:var(--fg-dim);
+    font-size:1rem;
+    line-height:1.7;
+    max-width:640px;
+    margin-bottom:1.5rem;
+  }
+  .project-tech{
+    display:flex;
+    flex-wrap:wrap;
+    gap:.4rem;
+    margin-bottom:1.5rem;
+  }
+  .project-tech span{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;
+    color:var(--fg-dim);
+    padding:.25rem .6rem;
+    border:1px solid var(--line-2);
+    border-radius:2px;
+  }
+  .project-links{
+    display:flex;
+    gap:1.5rem;
+    flex-wrap:wrap;
+  }
+  .project-links span{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--fg);
+    border-bottom:1px solid var(--accent);
+    padding-bottom:2px;
+  }
+  .project-links span::after{content:' ↗'}
+
+  .project-year{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.8rem;
+    color:var(--fg-dimmer);
+    letter-spacing:.15em;
+    padding-top:.8rem;
+    position:relative;
+    z-index:2;
+  }
+  @media (max-width:900px){
+    .project{grid-template-columns:1fr;gap:1rem;padding:2rem 0}
+    .project:hover{padding:2rem 0}
+    .project-num,.project-year{padding-top:0}
+  }
+
+  /* ACHIEVEMENTS */
+  .achievements{
+    border:1px solid var(--line);
+    background:var(--bg-2);
+  }
+  .achievement{
+    display:grid;
+    grid-template-columns:60px 1fr auto;
+    gap:2rem;
+    padding:2rem;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+    transition:background .2s;
+  }
+  .achievement:last-child{border-bottom:none}
+  .achievement:hover{background:rgba(198,255,61,.03)}
+  .ach-rank{
+    font-family:'Instrument Serif',serif;
+    font-size:2.5rem;
+    color:var(--accent);
+    line-height:1;
+  }
+  .ach-title{
+    font-size:1.05rem;
+    color:var(--fg);
+    margin-bottom:.25rem;
+    font-weight:500;
+  }
+  .ach-sub{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.75rem;
+    color:var(--fg-dim);
+    letter-spacing:.08em;
+  }
+  .ach-year{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.8rem;
+    color:var(--fg-dimmer);
+  }
+  @media (max-width:768px){
+    .achievement{grid-template-columns:auto 1fr;gap:1rem;padding:1.5rem}
+    .ach-year{grid-column:span 2;text-align:right}
+  }
+
+  /* CERTS */
+  .certs{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:1rem;
+  }
+  .cert{
+    padding:1.75rem;
+    border:1px solid var(--line);
+    transition:all .3s;
+    position:relative;
+    overflow:hidden;
+  }
+  .cert:hover{
+    border-color:var(--accent);
+    transform:translateY(-4px);
+  }
+  .cert::before{
+    content:'';
+    position:absolute;
+    top:0;left:-100%;
+    width:100%;height:100%;
+    background:linear-gradient(90deg,transparent,rgba(198,255,61,.05),transparent);
+    transition:left .6s;
+  }
+  .cert:hover::before{left:100%}
+  .cert-icon{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.65rem;
+    color:var(--accent);
+    letter-spacing:.2em;
+    margin-bottom:1rem;
+  }
+  .cert-name{
+    font-size:1rem;
+    color:var(--fg);
+    line-height:1.4;
+    margin-bottom:.5rem;
+  }
+  .cert-date{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;
+    color:var(--fg-dim);
+    letter-spacing:.1em;
+  }
+
+  /* CONTACT */
+  .contact{
+    text-align:center;
+    padding:10rem 2.5rem;
+  }
+  .contact-eyebrow{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.72rem;
+    color:var(--accent);
+    letter-spacing:.25em;
+    text-transform:uppercase;
+    margin-bottom:1.5rem;
+  }
+  .contact-title{
+    font-family:'Instrument Serif',serif;
+    font-size:clamp(3rem,8vw,6.5rem);
+    line-height:1;
+    letter-spacing:-.02em;
+    margin-bottom:2.5rem;
+  }
+  .contact-title em{color:var(--fg-dim);font-style:italic}
+  .contact-mail{
+    font-family:'Instrument Serif',serif;
+    font-style:italic;
+    font-size:clamp(1.5rem,3.5vw,2.5rem);
+    color:var(--accent);
+    text-decoration:none;
+    border-bottom:1px solid var(--accent);
+    padding-bottom:.25rem;
+    transition:opacity .2s;
+  }
+  .contact-mail:hover{opacity:.7}
+
+  .contact-links{
+    display:flex;
+    justify-content:center;
+    gap:3rem;
+    margin-top:4rem;
+    flex-wrap:wrap;
+  }
+  .contact-links a{
+    font-family:'JetBrains Mono',monospace;
+    font-size:.8rem;
+    letter-spacing:.15em;
+    text-transform:uppercase;
+    color:var(--fg-dim);
+    text-decoration:none;
+    transition:color .2s;
+    display:flex;
+    align-items:center;
+    gap:.5rem;
+  }
+  .contact-links a:hover{color:var(--accent)}
+  .contact-links a::after{content:'↗';opacity:.6}
+
+  /* FOOTER */
+  footer{
+    border-top:1px solid var(--line);
+    padding:2rem 2.5rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family:'JetBrains Mono',monospace;
+    font-size:.7rem;
+    color:var(--fg-dimmer);
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    max-width:1400px;
+    margin:0 auto;
+    flex-wrap:wrap;
+    gap:1rem;
+  }
+  footer .status{display:flex;align-items:center;gap:.5rem}
+  footer .status .dot{
+    width:6px;height:6px;
+    background:var(--accent);
+    border-radius:50%;
+    animation:pulse 2s infinite;
+    box-shadow:0 0 8px var(--accent);
+  }
+
+  /* Reveal */
+  .reveal{
+    opacity:0;
+    transform:translateY(30px);
+    transition:opacity .8s cubic-bezier(.2,.8,.2,1), transform .8s cubic-bezier(.2,.8,.2,1);
+  }
+  .reveal.visible{opacity:1;transform:translateY(0)}
+  .reveal-delay-1{transition-delay:.1s}
+  .reveal-delay-2{transition-delay:.2s}
+  .reveal-delay-3{transition-delay:.3s}
+
+  ::selection{background:var(--accent);color:var(--bg)}
+  ::-webkit-scrollbar{width:6px}
+  ::-webkit-scrollbar-track{background:var(--bg)}
+  ::-webkit-scrollbar-thumb{background:var(--line-2)}
+  ::-webkit-scrollbar-thumb:hover{background:var(--accent)}
+</style>
+</head>
+<body>
+
+<!-- BOOT SEQUENCE -->
+<div id="boot">
+  <div id="boot-inner">
+    <div style="animation-delay:.05s"><span class="prompt">$</span> init portfolio.harshchoudhary</div>
+    <div style="animation-delay:.25s"><span class="prompt">›</span> loading identity ... <span class="ok">ok</span></div>
+    <div style="animation-delay:.5s"><span class="prompt">›</span> mounting projects/ ... <span class="ok">ok</span></div>
+    <div style="animation-delay:.75s"><span class="prompt">›</span> handshake &lt;-&gt; recruiter ... <span class="ok">ok</span></div>
+    <div style="animation-delay:1s"><span class="prompt">›</span> ready.</div>
+  </div>
+</div>
+
+<div class="cursor"></div>
+<div class="cursor-ring"></div>
+<canvas id="network"></canvas>
+<div class="grid-bg"></div>
+
+<nav>
+  <a href="#" class="logo"><span class="logo-dot"></span>HARSH.CHOUDHARY</a>
+  <ul class="nav-links">
+    <li><a href="#work" data-num="01">Work</a></li>
+    <li><a href="#skills" data-num="02">Stack</a></li>
+    <li><a href="#contact" data-num="03">Contact</a></li>
+  </ul>
+</nav>
+
+<main>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-meta reveal visible">
+      <span><span class="bullet"></span>Available · SDE Roles</span>
+      <span><span class="bullet amber"></span>ECE '28 · MNNIT Allahabad</span>
+      <span><span class="bullet blue"></span>Prayagraj, IN</span>
+    </div>
+
+    <h1 class="reveal visible">
+      Harsh Choudhary <span class="accent">— building</span><br />
+      systems that <span class="accent">sense signal</span><br />
+      in noise.
+    </h1>
+
+    <div class="hero-sub">
+      <p class="hero-desc reveal visible reveal-delay-1">
+        Software engineer with a bias toward <strong>AI infrastructure</strong> —
+        multi-agent workflows, RAG pipelines, and telemetry-driven systems.
+        I ship end-to-end: from schema design and multi-tenant storage to the frontend a user actually clicks.
+        Open to <strong>SDE roles</strong> in India and remote.
+      </p>
+      <div class="reveal visible reveal-delay-2 term">
+        <div class="term-head">
+          <span class="dot"></span><span class="dot"></span><span class="dot g"></span>
+          <span style="margin-left:.4rem">~/whoami</span>
+        </div>
+        <div class="term-body">
+          <div><span class="k">role</span>: <span class="v">SDE / AI Systems</span></div>
+          <div><span class="k">stack</span>: <span class="v">python · react · postgres</span></div>
+          <div><span class="k">ai</span>: <span class="v">langchain · langgraph · rag</span></div>
+          <div><span class="k">focus</span>: <span class="v">multi-agent · decision intel</span></div>
+          <div><span class="c"># scroll for receipts ↓</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-cue">SCROLL</div>
+  </section>
+
+</main>
+
+<!-- MARQUEE -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>Available for SDE roles</span>
+    <span>Multi-Agent AI</span>
+    <span>RAG pipelines</span>
+    <span>Supply chain intelligence</span>
+    <span>3rd — ML Hackathon</span>
+    <span>2nd — Avishkar '25</span>
+    <span>Available for SDE roles</span>
+    <span>Multi-Agent AI</span>
+    <span>RAG pipelines</span>
+    <span>Supply chain intelligence</span>
+    <span>3rd — ML Hackathon</span>
+    <span>2nd — Avishkar '25</span>
+  </div>
+</div>
+
+<main>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-header reveal">
+      <div class="section-num">§ 00 / BACKGROUND</div>
+      <h2 class="section-title">Third-year ECE undergrad<br /><em>writing production AI systems.</em></h2>
+    </div>
+    <div class="about">
+      <div class="about-text reveal">
+        <p>
+          I'm five semesters into ECE at <strong>MNNIT Allahabad</strong>, and most of that time has been spent on things beyond coursework — end-to-end AI systems, hackathon podiums, and a robotics club I now mentor for.
+        </p>
+        <div class="pull">
+          "Signal in noise" isn't a tagline — it's what I actually work on. Messy telemetry, clean decisions.
+        </div>
+        <p>
+          Recent focus: the <strong>multi-agent side of AI</strong> — orchestrating RAG pipelines, wiring external telemetry APIs, and shipping systems that reason across data sources. Equally comfortable with the boring parts — schema design, multi-tenant storage, and making sure the thing actually works when a user hits it.
+        </p>
+        <p>
+          Currently applying for <strong>SDE roles</strong> — full-time and internship.
+        </p>
+      </div>
+      <div class="stats reveal reveal-delay-1">
+        <div class="stat">
+          <div class="stat-value">2<span class="unit"></span></div>
+          <div class="stat-label">Hackathon podiums</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">4+<span class="unit"></span></div>
+          <div class="stat-label">Systems shipped</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">2<span class="unit"></span></div>
+          <div class="stat-label">AI / cloud certs</div>
+        </div>
+        <div class="stat">
+          <div class="stat-value">1<span class="unit"></span></div>
+          <div class="stat-label">Robotics club — mentor</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="section-header reveal">
+      <div class="section-num">§ 01 / SELECTED WORK</div>
+      <h2 class="section-title">Things I've shipped, <em>not just built.</em></h2>
+    </div>
+
+    <div class="projects">
+      <a href="https://geo-secure.vercel.app/" target="_blank" rel="noopener" class="project reveal" data-big="01">
+        <div class="project-num">→ 001</div>
+        <div class="project-body">
+          <h3 class="project-title">
+            GeoSecure <span class="arrow">↗</span>
+            <span class="badge">FLAGSHIP</span>
+          </h3>
+          <p class="project-desc">
+            AI-driven supply chain risk intelligence platform. Multi-agent AI workflows for real-time risk assessment across geopolitical and operational vectors. RAG pipeline ingests GDELT, World Bank, and AlphaVantage; multi-tenant storage on PostgreSQL + Prisma. Frontend is React with a live risk dashboard.
+          </p>
+          <div class="project-tech">
+            <span>React.js</span><span>Node.js</span><span>Express</span>
+            <span>PostgreSQL</span><span>Prisma ORM</span><span>Multi-Agent AI</span>
+            <span>RAG</span><span>Tailwind</span>
+          </div>
+          <div class="project-links">
+            <span>Live Demo</span>
+            <span>Source</span>
+          </div>
+        </div>
+        <div class="project-year">2026</div>
+      </a>
+
+      <a href="https://github.com/HarshChoudharyGit?tab=repositories" target="_blank" rel="noopener" class="project reveal" data-big="02">
+        <div class="project-num">→ 002</div>
+        <div class="project-body">
+          <h3 class="project-title">
+            Commentility <span class="arrow">↗</span>
+            <span class="badge amber">3RD · ML HACKATHON</span>
+          </h3>
+          <p class="project-desc">
+            End-to-end sentiment analysis pipeline for YouTube consumer insights. Trained ML classification models to structure unstructured social feedback at scale, then built the visualization layer that turns raw audience data into decision-grade metrics. Placed 3rd in an ML hackathon.
+          </p>
+          <div class="project-tech">
+            <span>Python</span><span>NLP</span><span>Sentiment Analysis</span>
+            <span>Pandas</span><span>ML Classification</span><span>Data Viz</span>
+          </div>
+          <div class="project-links">
+            <span>Source</span>
+          </div>
+        </div>
+        <div class="project-year">2026</div>
+      </a>
+
+      <a href="https://github.com/HarshChoudharyGit?tab=repositories" target="_blank" rel="noopener" class="project reveal" data-big="03">
+        <div class="project-num">→ 003</div>
+        <div class="project-body">
+          <h3 class="project-title">
+            Trailblitz <span class="arrow">↗</span>
+            <span class="badge">2ND · AVISHKAR '25</span>
+          </h3>
+          <p class="project-desc">
+            Conversational maze-solving system — a chatbot paired with a maze-solver engine. The bot handles the interaction layer and translates user prompts into moves for the underlying solver. Built for the Trailblitz competition at Avishkar 2025 (MNNIT tech fest); placed 2nd overall.
+          </p>
+          <div class="project-tech">
+            <span>Python</span><span>Chatbot</span><span>Path Planning</span><span>Search Algorithms</span>
+          </div>
+          <div class="project-links">
+            <span>More on GitHub</span>
+          </div>
+        </div>
+        <div class="project-year">2025</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- SKILLS -->
+  <section id="skills">
+    <div class="section-header reveal">
+      <div class="section-num">§ 02 / STACK</div>
+      <h2 class="section-title">Tools I reach for <em>on instinct.</em></h2>
+    </div>
+
+    <div class="skills-grid reveal">
+      <div class="skill-row">
+        <div class="skill-cat">Languages</div>
+        <div class="skill-list">
+          <span class="skill-tag">Python</span>
+          <span class="skill-tag">SQL</span>
+          <span class="skill-tag">Java</span>
+          <span class="skill-tag">C</span>
+        </div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-cat">AI · ML · NLP</div>
+        <div class="skill-list">
+          <span class="skill-tag">LangChain</span>
+          <span class="skill-tag">LangGraph</span>
+          <span class="skill-tag">RAG</span>
+          <span class="skill-tag">Prompt Engineering</span>
+          <span class="skill-tag">Sentiment Analysis</span>
+          <span class="skill-tag">Multi-Agent Systems</span>
+          <span class="skill-tag">NLP</span>
+        </div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-cat">Data · Storage</div>
+        <div class="skill-list">
+          <span class="skill-tag">PostgreSQL</span>
+          <span class="skill-tag">MySQL</span>
+          <span class="skill-tag">MongoDB</span>
+          <span class="skill-tag">SQLite</span>
+          <span class="skill-tag">Prisma ORM</span>
+          <span class="skill-tag">Data Visualization</span>
+        </div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-cat">Dev · Deployment</div>
+        <div class="skill-list">
+          <span class="skill-tag">Git</span>
+          <span class="skill-tag">GitHub</span>
+          <span class="skill-tag">VS Code</span>
+          <span class="skill-tag">Postman</span>
+          <span class="skill-tag">REST APIs</span>
+          <span class="skill-tag">Vercel</span>
+        </div>
+      </div>
+      <div class="skill-row">
+        <div class="skill-cat">Focus areas</div>
+        <div class="skill-list">
+          <span class="skill-tag">Supply Chain Analytics</span>
+          <span class="skill-tag">Decision Intelligence</span>
+          <span class="skill-tag">Process Optimization</span>
+          <span class="skill-tag">Data Structures & Algorithms</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ACHIEVEMENTS -->
+  <section id="achievements">
+    <div class="section-header reveal">
+      <div class="section-num">§ 03 / RECOGNITION</div>
+      <h2 class="section-title">Podiums, positions, <em>proof of work.</em></h2>
+    </div>
+    <div class="achievements reveal">
+      <div class="achievement">
+        <div class="ach-rank">3<sup style="font-size:1rem">rd</sup></div>
+        <div>
+          <div class="ach-title">ML Hackathon — Commentility</div>
+          <div class="ach-sub">Sentiment Analytics Engine · YouTube consumer insights</div>
+        </div>
+        <div class="ach-year">2026</div>
+      </div>
+      <div class="achievement">
+        <div class="ach-rank">2<sup style="font-size:1rem">nd</sup></div>
+        <div>
+          <div class="ach-title">Trailblitz · Avishkar 2025</div>
+          <div class="ach-sub">Conversational maze-solving system · MNNIT tech fest</div>
+        </div>
+        <div class="ach-year">2025</div>
+      </div>
+      <div class="achievement">
+        <div class="ach-rank" style="font-size:1.5rem;padding-top:.5rem">✦</div>
+        <div>
+          <div class="ach-title">Mentor · Robotics Club, MNNIT Allahabad</div>
+          <div class="ach-sub">Junior team mentorship · workshops · resource allocation</div>
+        </div>
+        <div class="ach-year">'26 — NOW</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTS -->
+  <section id="certs">
+    <div class="section-header reveal">
+      <div class="section-num">§ 04 / CREDENTIALS</div>
+      <h2 class="section-title">Formal <em>learning.</em></h2>
+    </div>
+    <div class="certs">
+      <div class="cert reveal">
+        <div class="cert-icon">◈ GOOGLE / KAGGLE</div>
+        <div class="cert-name">Google AI Agents Intensive</div>
+        <div class="cert-date">DEC 2025</div>
+      </div>
+      <div class="cert reveal reveal-delay-1">
+        <div class="cert-icon">◈ ORACLE</div>
+        <div class="cert-name">OCI AI Foundations Associate</div>
+        <div class="cert-date">OCT 2025</div>
+      </div>
+      <div class="cert reveal reveal-delay-2">
+        <div class="cert-icon">◈ COMPETITIVE</div>
+        <div class="cert-name">LeetCode · Codeforces · GeeksforGeeks</div>
+        <div class="cert-date">ACTIVE</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact" class="contact">
+    <div class="contact-eyebrow reveal">§ 05 / GET IN TOUCH</div>
+    <h2 class="contact-title reveal reveal-delay-1">
+      Have a role, <em>an idea,</em><br />or a problem worth solving?
+    </h2>
+    <a href="mailto:harsh.20244071mnnit@gmail.com" class="contact-mail reveal reveal-delay-2">harsh.20244071mnnit@gmail.com</a>
+
+    <div class="contact-links reveal reveal-delay-3">
+      <a href="https://github.com/HarshChoudharyGit" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/harshchoudhary2006/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://geo-secure.vercel.app/" target="_blank" rel="noopener">GeoSecure Live</a>
+      <a href="tel:+916393332095">+91 63933 32095</a>
+    </div>
+  </section>
+
+  <footer>
+    <div>© 2026 Harsh Choudhary · Built from scratch</div>
+    <div class="status"><span class="dot"></span>OPEN TO OPPORTUNITIES</div>
+    <div>v1.1 · MNNIT · ECE</div>
+  </footer>
+
+</main>
+
+<script>
+  // BOOT SEQUENCE
+  window.addEventListener('load', ()=>{
+    setTimeout(()=>document.getElementById('boot').classList.add('done'), 1400);
+  });
+
+  // CUSTOM CURSOR
+  const cursor = document.querySelector('.cursor');
+  const ring = document.querySelector('.cursor-ring');
+  let mouseX=0,mouseY=0,ringX=0,ringY=0;
+  document.addEventListener('mousemove',e=>{
+    mouseX=e.clientX;mouseY=e.clientY;
+    cursor.style.transform=`translate(${mouseX-4}px,${mouseY-4}px)`;
+  });
+  function animateRing(){
+    ringX += (mouseX-ringX)*.15;
+    ringY += (mouseY-ringY)*.15;
+    ring.style.transform=`translate(${ringX-18}px,${ringY-18}px)`;
+    requestAnimationFrame(animateRing);
+  }
+  animateRing();
+
+  document.querySelectorAll('a, .project, .stat, .cert, .skill-tag, .achievement').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cursor.classList.add('hover');ring.classList.add('hover')});
+    el.addEventListener('mouseleave',()=>{cursor.classList.remove('hover');ring.classList.remove('hover')});
+  });
+
+  // NAV SCROLL
+  const nav = document.querySelector('nav');
+  window.addEventListener('scroll',()=>{
+    if(window.scrollY>50) nav.classList.add('scrolled');
+    else nav.classList.remove('scrolled');
+  });
+
+  // REVEAL ON SCROLL
+  const observer = new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  },{threshold:.1, rootMargin:'-50px'});
+  document.querySelectorAll('.reveal').forEach(el=>observer.observe(el));
+
+  // INTERACTIVE NETWORK CANVAS — signal nodes that connect near cursor
+  const canvas = document.getElementById('network');
+  const ctx = canvas.getContext('2d');
+  let W = canvas.width = window.innerWidth;
+  let H = canvas.height = window.innerHeight;
+  let mx = W/2, my = H/2;
+
+  window.addEventListener('resize', ()=>{
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  });
+  window.addEventListener('mousemove', e=>{mx=e.clientX; my=e.clientY;});
+
+  const nodes = [];
+  const NODE_COUNT = window.innerWidth < 768 ? 30 : 60;
+  for(let i=0;i<NODE_COUNT;i++){
+    nodes.push({
+      x: Math.random()*W,
+      y: Math.random()*H,
+      vx: (Math.random()-.5)*.3,
+      vy: (Math.random()-.5)*.3,
+      r: Math.random()*1.5 + .5
+    });
+  }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // update
+    for(const n of nodes){
+      n.x += n.vx;
+      n.y += n.vy;
+      if(n.x<0||n.x>W) n.vx*=-1;
+      if(n.y<0||n.y>H) n.vy*=-1;
+    }
+
+    // connections
+    for(let i=0;i<nodes.length;i++){
+      const a = nodes[i];
+
+      // to cursor
+      const dxm = a.x-mx, dym = a.y-my;
+      const dm = Math.sqrt(dxm*dxm+dym*dym);
+      if(dm<180){
+        const alpha = (1-dm/180)*.5;
+        ctx.strokeStyle = `rgba(198,255,61,${alpha})`;
+        ctx.lineWidth = .8;
+        ctx.beginPath();
+        ctx.moveTo(a.x,a.y);
+        ctx.lineTo(mx,my);
+        ctx.stroke();
+      }
+
+      // to other nodes
+      for(let j=i+1;j<nodes.length;j++){
+        const b = nodes[j];
+        const dx = a.x-b.x, dy = a.y-b.y;
+        const d = Math.sqrt(dx*dx+dy*dy);
+        if(d<120){
+          const alpha = (1-d/120)*.15;
+          ctx.strokeStyle = `rgba(138,143,153,${alpha})`;
+          ctx.lineWidth = .5;
+          ctx.beginPath();
+          ctx.moveTo(a.x,a.y);
+          ctx.lineTo(b.x,b.y);
+          ctx.stroke();
+        }
+      }
+    }
+
+    // nodes
+    for(const n of nodes){
+      const dxm = n.x-mx, dym = n.y-my;
+      const dm = Math.sqrt(dxm*dxm+dym*dym);
+      const near = dm<180;
+      ctx.fillStyle = near ? 'rgba(198,255,61,.9)' : 'rgba(138,143,153,.4)';
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, near ? n.r*1.8 : n.r, 0, Math.PI*2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+</script>
+</body>
+</html>
